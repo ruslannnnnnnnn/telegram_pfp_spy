@@ -4,6 +4,7 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"log"
 	"os"
+	"strconv"
 	"time"
 )
 
@@ -37,7 +38,7 @@ func MonitorPfp(config SpyingConfig) {
 
 		pollInterval := time.Duration(config.PollInterval) * time.Second
 		if err != nil {
-			log.Printf("Failed to get profile photos: %v", err)
+			log.Printf("Failed to get profile photos of "+strconv.Itoa(config.UserId)+": %v", err)
 			time.Sleep(pollInterval)
 			continue
 		}
