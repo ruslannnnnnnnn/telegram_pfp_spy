@@ -7,15 +7,6 @@ import (
 	"time"
 )
 
-//const (
-// ChatID           = int64(-1002752072140) // Выпускники
-// ChatID = int64(1104524952) // лс со мной
-// pollInterval = 5 * time.Second   // Интервал проверки аватарки
-// minDelay     = 1 * time.Second
-// userId       = 1104524952 // ruslan
-// userId = 862556633 // adelina
-//)
-
 func GetBot(token string) *tgbotapi.BotAPI {
 	bot, err := tgbotapi.NewBotAPI(token)
 	if err != nil {
