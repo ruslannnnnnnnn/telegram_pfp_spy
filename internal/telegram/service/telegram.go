@@ -46,7 +46,7 @@ func MonitorPfp(config SpyingConfig) {
 		if len(photos.Photos) > 0 && len(photos.Photos[0]) > 0 {
 			currentPhotoID := photos.Photos[0][0].FileID
 			if currentPhotoID != lastPhotoID && lastPhotoID != "" {
-				log.Println("New profile photo detected")
+				log.Println("New profile photo detected, user_id: " + strconv.Itoa(config.UserId))
 
 				msg := tgbotapi.NewMessage(int64(config.ChatId), config.MessageText)
 				delay := time.Duration(config.MinDelay) * time.Second

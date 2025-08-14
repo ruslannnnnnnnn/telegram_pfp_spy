@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"log"
 	"os"
@@ -50,5 +51,10 @@ func main() {
 		go service.MonitorPfp(config)
 	}
 
-	select {}
+	r := gin.Default()
+	r.GET("/ping", func(c *gin.Context) {
+		c.JSON(200, "pong")
+	})
+
+	r.Run()
 }
