@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	AppEnvPath     = "/app/.env"
+	EnvFilePath    = "/app/.env"
 	ConfigFilePath = "/app/config.json"
 	// ENV var names
 	PollIntervalENV             = "POLL_INTERVAL"
@@ -21,7 +21,7 @@ const (
 )
 
 func LoadConfig() common.Config {
-	err := godotenv.Load(AppEnvPath)
+	err := godotenv.Load(EnvFilePath)
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}

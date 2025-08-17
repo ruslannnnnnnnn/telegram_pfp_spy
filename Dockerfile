@@ -21,6 +21,7 @@ RUN --mount=type=cache,target=/var/cache/apk \
         && \
         update-ca-certificates
 
+
 # Create a non-privileged user that the app will run under.
 # See https://docs.docker.com/go/dockerfile-user-best-practices/
 ARG UID=10001
@@ -32,6 +33,12 @@ RUN adduser \
     --no-create-home \
     --uid "${UID}" \
     appuser
+
+
+RUN mkdir -p /app/log && \
+    chown -R appuser:appuser /app/log && \
+    chmod -R 755 /app/log
+
 USER appuser
 
 COPY --from=build /bin/server /bin/
