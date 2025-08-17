@@ -19,16 +19,16 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 
-	var configs []service.SpyingConfigJson
+	var appConfig service.SpyingConfig
 
 	configJson, err := os.ReadFile(ConfigFilePath)
 	if err != nil {
-		log.Fatal("Error reading config file")
+		log.Fatal("Error reading appConfig file")
 	}
 
-	err = json.Unmarshal(configJson, &configs)
+	err = json.Unmarshal(configJson, &appConfig)
 	if err != nil {
-		log.Fatal("Error parsing config file")
+		log.Fatal("Error parsing appConfig file")
 	}
 
 	pollInterval, err := strconv.Atoi(os.Getenv("POLL_INTERVAL"))
@@ -40,15 +40,15 @@ func main() {
 		log.Fatal("Error parsing MIN_DELAY")
 	}
 
-	for _, jsonConfig := range configs {
+	for _, chatMember := range appConfig.ChatMembers {
 
-		config := service.SpyingConfig{
-			SpyingConfigJson: jsonConfig,
-			PollInterval:     pollInterval,
-			MinDelay:         minDelay,
+		spyingConfig := service.AppConfig{
+			SpyingConfig: appConfig,
+			PollInterval: pollInterval,
+			MinDelay:     minDelay,
 		}
 
-		go service.MonitorPfp(config)
+		go service.MonitorPfp(spyingConfig, chatMember)
 	}
 
 	r := gin.Default()
@@ -56,5 +56,8 @@ func main() {
 		c.JSON(200, "pong")
 	})
 
-	r.Run()
+	ginError := r.Run()
+	if ginError != nil {
+		log.Fatal(ginError.Error())
+	}
 }

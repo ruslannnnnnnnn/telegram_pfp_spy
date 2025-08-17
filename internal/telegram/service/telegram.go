@@ -17,28 +17,32 @@ func GetBot(token string) *tgbotapi.BotAPI {
 	return bot
 }
 
-type SpyingConfigJson struct {
-	UserId      int    `json:"user_id"` // whom's pfp we're going to monitor
-	ChatId      int    `json:"chat_id"` // where we will send messages about pfp updates
+type SpyingConfig struct {
+	ChatId      int                  `json:"chat_id"`
+	ChatMembers []TelegramChatMember `json:"users"`
+}
+
+type TelegramChatMember struct {
+	UserId      int    `json:"user_id"`
 	MessageText string `json:"message_text"`
 }
 
-type SpyingConfig struct {
-	SpyingConfigJson
+type AppConfig struct {
+	SpyingConfig
 	PollInterval int
 	MinDelay     int
 }
 
-func MonitorPfp(config SpyingConfig) {
+func MonitorPfp(config AppConfig, chatMember TelegramChatMember) {
 	bot := GetBot(os.Getenv("TELEGRAM_BOT_API_TOKEN"))
 	var lastPhotoID string
 
 	for {
-		photos, err := getPhoto(bot, int64(config.UserId))
+		photos, err := getPhoto(bot, int64(chatMember.UserId))
 
 		pollInterval := time.Duration(config.PollInterval) * time.Second
 		if err != nil {
-			log.Printf("Failed to get profile photos of "+strconv.Itoa(config.UserId)+": %v", err)
+			log.Printf("Failed to get profile photos of "+strconv.Itoa(chatMember.UserId)+": %v", err)
 			time.Sleep(pollInterval)
 			continue
 		}
@@ -46,9 +50,9 @@ func MonitorPfp(config SpyingConfig) {
 		if len(photos.Photos) > 0 && len(photos.Photos[0]) > 0 {
 			currentPhotoID := photos.Photos[0][0].FileID
 			if currentPhotoID != lastPhotoID && lastPhotoID != "" {
-				log.Println("New profile photo detected, user_id: " + strconv.Itoa(config.UserId))
+				log.Println("New profile photo detected, user_id: " + strconv.Itoa(chatMember.UserId))
 
-				msg := tgbotapi.NewMessage(int64(config.ChatId), config.MessageText)
+				msg := tgbotapi.NewMessage(int64(config.ChatId), chatMember.MessageText)
 				delay := time.Duration(config.MinDelay) * time.Second
 
 				if _, err := bot.Send(msg); err != nil {
