@@ -3,44 +3,19 @@ package service
 import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"log"
-	"os"
+	"spying_adelina/internal/common"
 	"strconv"
 	"time"
 )
 
-func GetBot(token string) *tgbotapi.BotAPI {
-	bot, err := tgbotapi.NewBotAPI(token)
-	if err != nil {
-		log.Fatalf("Failed to initialize Telegram bot: %v", err)
-	}
+func MonitorPfp(tgbot *tgbotapi.BotAPI, appConfig common.Config, chatMember common.TelegramChatMember) {
 
-	return bot
-}
-
-type SpyingConfig struct {
-	ChatId      int                  `json:"chat_id"`
-	ChatMembers []TelegramChatMember `json:"users"`
-}
-
-type TelegramChatMember struct {
-	UserId      int    `json:"user_id"`
-	MessageText string `json:"message_text"`
-}
-
-type AppConfig struct {
-	SpyingConfig
-	PollInterval int
-	MinDelay     int
-}
-
-func MonitorPfp(config AppConfig, chatMember TelegramChatMember) {
-	bot := GetBot(os.Getenv("TELEGRAM_BOT_API_TOKEN"))
 	var lastPhotoID string
 
 	for {
-		photos, err := getPhoto(bot, int64(chatMember.UserId))
+		photos, err := getPhoto(tgbot, int64(chatMember.UserId))
 
-		pollInterval := time.Duration(config.PollInterval) * time.Second
+		pollInterval := time.Duration(appConfig.PollInterval) * time.Second
 		if err != nil {
 			log.Printf("Failed to get profile photos of "+strconv.Itoa(chatMember.UserId)+": %v", err)
 			time.Sleep(pollInterval)
@@ -52,10 +27,10 @@ func MonitorPfp(config AppConfig, chatMember TelegramChatMember) {
 			if currentPhotoID != lastPhotoID && lastPhotoID != "" {
 				log.Println("New profile photo detected, user_id: " + strconv.Itoa(chatMember.UserId))
 
-				msg := tgbotapi.NewMessage(int64(config.ChatId), chatMember.MessageText)
-				delay := time.Duration(config.MinDelay) * time.Second
+				msg := tgbotapi.NewMessage(int64(appConfig.SpyingConfig.ChatId), chatMember.MessageText)
+				delay := time.Duration(appConfig.MinDelay) * time.Second
 
-				if _, err := bot.Send(msg); err != nil {
+				if _, err := tgbot.Send(msg); err != nil {
 					log.Printf("Failed to send message: %v", err)
 					time.Sleep(delay)
 					continue

@@ -1,55 +1,30 @@
 package main
 
 import (
-	"encoding/json"
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 	"log"
 	"os"
-	"spying_adelina/internal/telegram/service"
-	"strconv"
+	"spying_adelina/internal/app"
+	telegram_service "spying_adelina/internal/telegram/service"
 )
 
-const AppEnvPath = "/app/.env"
-const ConfigFilePath = "/app/config.json"
+const (
+	TelegramBotApiToken = "TELEGRAM_BOT_API_TOKEN"
+)
 
 func main() {
-	err := godotenv.Load(AppEnvPath)
-	if err != nil {
-		log.Fatal("Error loading .env file")
+
+	appConfig := app.LoadConfig()
+
+	// создаем бота епта
+	bot := telegram_service.MakeBotByToken(os.Getenv(TelegramBotApiToken))
+
+	// для каждого пользователя из чата запускаем слежку за автаркой
+	for _, chatMember := range appConfig.SpyingConfig.ChatMembers {
+		go telegram_service.MonitorPfp(bot, appConfig, chatMember)
 	}
 
-	var appConfig service.SpyingConfig
-
-	configJson, err := os.ReadFile(ConfigFilePath)
-	if err != nil {
-		log.Fatal("Error reading appConfig file")
-	}
-
-	err = json.Unmarshal(configJson, &appConfig)
-	if err != nil {
-		log.Fatal("Error parsing appConfig file")
-	}
-
-	pollInterval, err := strconv.Atoi(os.Getenv("POLL_INTERVAL"))
-	if err != nil {
-		log.Fatal("Error parsing POLL_INTERVAL")
-	}
-	minDelay, err := strconv.Atoi(os.Getenv("MIN_DELAY"))
-	if err != nil {
-		log.Fatal("Error parsing MIN_DELAY")
-	}
-
-	for _, chatMember := range appConfig.ChatMembers {
-
-		spyingConfig := service.AppConfig{
-			SpyingConfig: appConfig,
-			PollInterval: pollInterval,
-			MinDelay:     minDelay,
-		}
-
-		go service.MonitorPfp(spyingConfig, chatMember)
-	}
+	go telegram_service.PizzaGame(bot, appConfig)
 
 	r := gin.Default()
 	r.GET("/ping", func(c *gin.Context) {
