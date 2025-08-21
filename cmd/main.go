@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"net/http"
 	"os"
 	"spying_adelina/internal/app"
 	telegramservice "spying_adelina/internal/telegram/service"
@@ -45,7 +46,7 @@ func main() {
 
 	r := gin.Default()
 	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(200, "pong")
+		c.Redirect(http.StatusMovedPermanently, "https://youtu.be/dQw4w9WgXcQ?si=lDs5Dg8PRgZLTM6T")
 	})
 
 	ginError := r.Run()
