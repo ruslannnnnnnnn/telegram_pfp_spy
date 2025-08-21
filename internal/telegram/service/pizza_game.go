@@ -2,12 +2,13 @@ package service
 
 import (
 	"fmt"
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"log"
 	"math/rand"
 	"spying_adelina/internal/common"
 	"strings"
 	"time"
+
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
 func PizzaGame(bot *tgbotapi.BotAPI, appConfig common.Config) {
@@ -46,6 +47,16 @@ func PizzaGame(bot *tgbotapi.BotAPI, appConfig common.Config) {
 
 				// Проверяем, содержит ли сообщение слово "пицца"
 				if strings.Contains(strings.ToLower(update.Message.Text), "пицца") {
+
+					if update.Message.From.UserName == "persecreton" {
+						vovaMessage := tgbotapi.NewMessage(update.Message.Chat.ID, "Вова я тибе маску парву")
+						_, vovaMsgErr := bot.Send(vovaMessage)
+						if vovaMsgErr != nil {
+							log.Println("Чето вовчику ответ не отправился")
+						}
+						continue
+					}
+
 					winner := fmt.Sprintf("@%s победил(а)!", update.Message.From.UserName)
 					winnerMsg := tgbotapi.NewMessage(update.Message.Chat.ID, winner)
 					_, winnerMsgSendErr := bot.Send(winnerMsg)

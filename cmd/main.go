@@ -1,22 +1,23 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
 	"log"
 	"os"
 	"spying_adelina/internal/app"
 	telegramservice "spying_adelina/internal/telegram/service"
+
+	"github.com/gin-gonic/gin"
 )
 
 const (
 	TelegramBotApiToken = "TELEGRAM_BOT_API_TOKEN"
-	ErrosLogFilePath    = "/app/log/errors.log"
+	ErrorsLogFilePath   = "/app/log/errors.log"
 )
 
 func main() {
 
 	// Открываем файл для логирования (если не существует - создаётся)
-	file, err := os.OpenFile(ErrosLogFilePath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	file, err := os.OpenFile(ErrorsLogFilePath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
 		log.Fatal("Ошибка открытия файла логов: ", err.Error())
 	}
