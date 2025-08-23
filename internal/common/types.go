@@ -1,6 +1,10 @@
 package common
 
-import tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+import (
+	"time"
+
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+)
 
 type SpyingConfig struct {
 	ChatId      int64                        `json:"chat_id"`
@@ -20,11 +24,16 @@ type Config struct {
 	MinDelay                  int
 	DelayBetweenPizzaGamesMin int
 	DelayBetweenPizzaGamesMax int
+	ClickHouseUser            string
+	ClickHousePassword        string
+	ClickHouseDb              string
 }
 
 type ITelegramUpdateHandler interface {
-	HandleTelegramUpdate(update tgbotapi.Update)
+	HandleTelegramUpdate(tgbotapi.Update)
 }
 
 type IAnalyticsStorage interface {
+	SaveTelegramUpdate(tgbotapi.Update) error
+	SavePizzaWin(tgbotapi.Update, time.Time) error
 }

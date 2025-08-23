@@ -15,14 +15,17 @@ type PizzaGame struct {
 	bot       *tgbotapi.BotAPI
 	appConfig *common.Config
 
+	storage common.IAnalyticsStorage
+
 	pizzaUpdatesChan chan tgbotapi.Update
 }
 
-func NewPizzaGame(bot *tgbotapi.BotAPI, appConfig *common.Config) *PizzaGame {
+func NewPizzaGame(bot *tgbotapi.BotAPI, appConfig *common.Config, storage common.IAnalyticsStorage) *PizzaGame {
 	return &PizzaGame{
 		bot:              bot,
 		appConfig:        appConfig,
 		pizzaUpdatesChan: make(chan tgbotapi.Update),
+		storage:          storage,
 	}
 }
 
@@ -77,6 +80,11 @@ func (p *PizzaGame) Start() {
 					if winnerMsgSendErr != nil {
 						log.Println("Не удалось отправить сообщение о победе" + winnerMsgSendErr.Error())
 						panic(winnerMsgSendErr)
+					}
+
+					err := p.storage.SavePizzaWin(update, gameStartTime)
+					if err != nil {
+						log.Println("Не удалось сохранить победу в пиццу " + err.Error())
 					}
 
 					gameOver = true

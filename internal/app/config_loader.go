@@ -18,7 +18,9 @@ const (
 	MinDelayEnv                 = "MIN_DELAY"
 	DelayBetweenPizzaGameMinEnv = "DELAY_BETWEEN_PIZZA_GAMES_MIN"
 	DelayBetweenPizzaGameMaxEnv = "DELAY_BETWEEN_PIZZA_GAMES_MAX"
-	TimeoutFormPizzaGameEnv     = "TIMEOUT_FOR_PIZZA_GAME"
+	ClickhouseDB                = "CLICKHOUSE_DB"
+	ClickhouseUser              = "CLICKHOUSE_USER"
+	ClickhousePassword          = "CLICKHOUSE_PASSWORD"
 )
 
 func LoadConfig() common.Config {
@@ -58,11 +60,20 @@ func LoadConfig() common.Config {
 		log.Fatal("Error parsing " + DelayBetweenPizzaGameMaxEnv)
 	}
 
+	clickHouseDb := os.Getenv(ClickhouseDB)
+
+	clickHouseUser := os.Getenv(ClickhouseUser)
+
+	clickHousePassword := os.Getenv(ClickhousePassword)
+
 	return common.Config{
 		SpyingConfig:              spyingConfig,
 		PollInterval:              pollInterval,
 		MinDelay:                  minDelay,
 		DelayBetweenPizzaGamesMin: delayBetweenPizzaGamesMin,
 		DelayBetweenPizzaGamesMax: delayBetweenPizzaGamesMax,
+		ClickHouseDb:              clickHouseDb,
+		ClickHouseUser:            clickHouseUser,
+		ClickHousePassword:        clickHousePassword,
 	}
 }

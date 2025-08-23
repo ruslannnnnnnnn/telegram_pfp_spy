@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 	"spying_adelina/internal/app"
+	clickhouse "spying_adelina/internal/clickhouse"
 	"spying_adelina/internal/telegram"
 	telegramservice "spying_adelina/internal/telegram/service"
 )
@@ -32,17 +33,25 @@ func main() {
 
 	appConfig := app.LoadConfig()
 
+	clickhouseInstance, err := clickhouse.NewClickHouse(&appConfig)
+	if err != nil {
+		log.Fatal("Could not connect to clickhouse db " + err.Error())
+	}
+
 	// создаем бота епта
 	bot := telegramservice.MakeBotByToken(os.Getenv(TelegramBotApiToken))
 
-	// для каждого пользователя из чата запускаем слежку за автаркой
+	// сборщик статистики
+	telegramMessageAnalyser := telegramservice.NewTelegramMessageAnalyser(bot, &appConfig, clickhouseInstance)
+
+	// для каждого пользователя из чата запускаем слежку за аватаркой
 	for _, chatMember := range appConfig.SpyingConfig.ChatMembers {
 		go telegramservice.MonitorPfp(bot, &appConfig, chatMember)
 	}
 
-	pizzaGame := telegramservice.NewPizzaGame(bot, &appConfig)
+	pizzaGame := telegramservice.NewPizzaGame(bot, &appConfig, clickhouseInstance)
 
 	go pizzaGame.Start()
 
-	telegram.ListenToUpdates(bot, pizzaGame)
+	telegram.ListenToUpdates(bot, pizzaGame, telegramMessageAnalyser)
 }
