@@ -58,17 +58,11 @@ func LoadConfig() common.Config {
 		log.Fatal("Error parsing " + DelayBetweenPizzaGameMaxEnv)
 	}
 
-	timeoutForPizzaGame, err := strconv.Atoi(os.Getenv(TimeoutFormPizzaGameEnv))
-	if err != nil {
-		log.Fatal("Error parsing " + TimeoutFormPizzaGameEnv)
-	}
-
 	return common.Config{
 		SpyingConfig:              spyingConfig,
 		PollInterval:              pollInterval,
 		MinDelay:                  minDelay,
 		DelayBetweenPizzaGamesMin: delayBetweenPizzaGamesMin,
 		DelayBetweenPizzaGamesMax: delayBetweenPizzaGamesMax,
-		TimeoutForPizzaGame:       timeoutForPizzaGame,
 	}
 }

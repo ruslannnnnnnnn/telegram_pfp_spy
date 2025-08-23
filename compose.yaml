@@ -8,5 +8,28 @@ services:
     restart: always
     volumes:
       - error_logs:/app/log/
+    depends_on:
+      - clickhouse
+
+  clickhouse:
+    image: clickhouse/clickhouse-server:latest
+    container_name: clickhouse
+    environment:
+      - CLICKHOUSE_DB=${CLICKHOUSE_DB}
+      - CLICKHOUSE_USER=${CLICKHOUSE_USER}
+      - CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD}
+    ports:
+      - "8123:8123"   # HTTP интерфейс
+      - "9000:9000"   # Native TCP интерфейс
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+      - clickhouse_logs:/var/log/clickhouse-server
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+
 volumes:
   error_logs:
+  clickhouse_data:
+  clickhouse_logs:

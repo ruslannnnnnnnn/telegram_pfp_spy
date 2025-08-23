@@ -2,13 +2,10 @@ package main
 
 import (
 	"log"
-	"net/http"
 	"os"
 	"spying_adelina/internal/app"
 	"spying_adelina/internal/telegram"
 	telegramservice "spying_adelina/internal/telegram/service"
-
-	"github.com/gin-gonic/gin"
 )
 
 const (
@@ -47,15 +44,5 @@ func main() {
 
 	go pizzaGame.Start()
 
-	go telegram.ListenToUpdates(bot, pizzaGame)
-
-	r := gin.Default()
-	r.GET("/ping", func(c *gin.Context) {
-		c.Redirect(http.StatusMovedPermanently, "https://youtu.be/dQw4w9WgXcQ?si=lDs5Dg8PRgZLTM6T")
-	})
-
-	ginError := r.Run()
-	if ginError != nil {
-		log.Fatal(ginError.Error())
-	}
+	telegram.ListenToUpdates(bot, pizzaGame)
 }

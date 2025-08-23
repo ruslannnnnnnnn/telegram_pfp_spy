@@ -3,12 +3,12 @@ package service
 import (
 	"log"
 	"spying_adelina/internal/common"
-	"strconv"
 	"time"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
+// MonitorPfp Устанавливает слежку за аватаркой пользователя, при обновлении пишет сообщение в чат
 func MonitorPfp(tgbot *tgbotapi.BotAPI, appConfig *common.Config, chatMember common.TelegramChatMember) {
 
 	var lastPhotoID string
@@ -18,7 +18,7 @@ func MonitorPfp(tgbot *tgbotapi.BotAPI, appConfig *common.Config, chatMember com
 
 		pollInterval := time.Duration(appConfig.PollInterval) * time.Second
 		if err != nil {
-			log.Printf("Failed to get profile photos of "+strconv.Itoa(chatMember.UserId)+": %v", err)
+			log.Printf("Failed to get profile photos of "+chatMember.Name+": %v", err)
 			time.Sleep(pollInterval)
 			continue
 		}
@@ -26,9 +26,9 @@ func MonitorPfp(tgbot *tgbotapi.BotAPI, appConfig *common.Config, chatMember com
 		if len(photos.Photos) > 0 && len(photos.Photos[0]) > 0 {
 			currentPhotoID := photos.Photos[0][0].FileID
 			if currentPhotoID != lastPhotoID && lastPhotoID != "" {
-				log.Println("New profile photo detected, user_id: " + strconv.Itoa(chatMember.UserId))
+				log.Println("New profile photo detected, user_id: " + chatMember.Name)
 
-				msg := tgbotapi.NewMessage(int64(appConfig.SpyingConfig.ChatId), chatMember.PfpUpdateText)
+				msg := tgbotapi.NewMessage(appConfig.SpyingConfig.ChatId, chatMember.PfpUpdateText)
 				delay := time.Duration(appConfig.MinDelay) * time.Second
 
 				if _, err := tgbot.Send(msg); err != nil {

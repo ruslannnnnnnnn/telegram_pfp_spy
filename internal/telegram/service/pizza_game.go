@@ -37,7 +37,7 @@ func (p *PizzaGame) Start() {
 		time.Sleep(sleepTime)
 
 		// Отправляем начальное сообщение и запоминаем время старта игры
-		msg := tgbotapi.NewMessage(int64(p.appConfig.SpyingConfig.ChatId), "Кто первый напишет \"пицца\" тот победил")
+		msg := tgbotapi.NewMessage(p.appConfig.SpyingConfig.ChatId, "Кто первый напишет \"пицца\" тот победил")
 		_, startPizzaGameErr := p.bot.Send(msg)
 		if startPizzaGameErr != nil {
 			log.Println("Не удалось отправить сообщение о начале игры в пиццу " + startPizzaGameErr.Error())

@@ -3,13 +3,13 @@ package common
 import tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 
 type SpyingConfig struct {
-	ChatId      int                          `json:"chat_id"`
+	ChatId      int64                        `json:"chat_id"`
 	ChatMembers map[int64]TelegramChatMember `json:"users"`
 }
 
 type TelegramChatMember struct {
 	Name          string `json:"name"`
-	UserId        int    `json:"user_id"`
+	UserId        int64  `json:"user_id"`
 	PfpUpdateText string `json:"pfp_update_text"`
 	PizzaWinText  string `json:"pizza_win_text"`
 }
@@ -20,9 +20,11 @@ type Config struct {
 	MinDelay                  int
 	DelayBetweenPizzaGamesMin int
 	DelayBetweenPizzaGamesMax int
-	TimeoutForPizzaGame       int
 }
 
-type TelegramUpdateHandler interface {
+type ITelegramUpdateHandler interface {
 	HandleTelegramUpdate(update tgbotapi.Update)
+}
+
+type IAnalyticsStorage interface {
 }
