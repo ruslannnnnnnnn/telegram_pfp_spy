@@ -3,8 +3,8 @@ package common
 import tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 
 type SpyingConfig struct {
-	ChatId      int                        `json:"chat_id"`
-	ChatMembers map[int]TelegramChatMember `json:"users"`
+	ChatId      int                          `json:"chat_id"`
+	ChatMembers map[int64]TelegramChatMember `json:"users"`
 }
 
 type TelegramChatMember struct {

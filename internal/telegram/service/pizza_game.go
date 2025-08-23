@@ -45,7 +45,6 @@ func (p *PizzaGame) Start() {
 		}
 
 		gameStartTime := time.Now() // Время старта игры
-		gameTimeout := time.After(time.Duration(p.appConfig.TimeoutForPizzaGame) * time.Minute)
 		gameOver := false
 
 		for !gameOver {
@@ -63,8 +62,17 @@ func (p *PizzaGame) Start() {
 				// Проверяем, содержит ли сообщение слово "пицца"
 				if strings.Contains(strings.ToLower(update.Message.Text), "пицца") {
 
-					winner := fmt.Sprintf("@%s победил(а)!", update.Message.From.UserName)
-					winnerMsg := tgbotapi.NewMessage(update.Message.Chat.ID, winner)
+					winner, isWinnerInConfig := p.appConfig.SpyingConfig.ChatMembers[update.Message.From.ID]
+
+					var winnerMessageText string
+
+					if isWinnerInConfig {
+						winnerMessageText = winner.PizzaWinText
+					} else {
+						winnerMessageText = fmt.Sprintf("@%s победил(а)!", update.Message.From.UserName)
+					}
+
+					winnerMsg := tgbotapi.NewMessage(update.Message.Chat.ID, winnerMessageText)
 					_, winnerMsgSendErr := p.bot.Send(winnerMsg)
 					if winnerMsgSendErr != nil {
 						log.Println("Не удалось отправить сообщение о победе" + winnerMsgSendErr.Error())
@@ -73,16 +81,9 @@ func (p *PizzaGame) Start() {
 
 					gameOver = true
 				}
-
-			case <-gameTimeout:
-				timeoutMsg := tgbotapi.NewMessage(int64(p.appConfig.SpyingConfig.ChatId), "Время вышло! Никто не успел написать \"пицца\"")
-				_, sendTimeoutMessageError := p.bot.Send(timeoutMsg)
-				if sendTimeoutMessageError != nil {
-					log.Println("Не удалось отправить сообщение о таймауте в чат" + sendTimeoutMessageError.Error())
-					panic(sendTimeoutMessageError)
-				}
-				gameOver = true
 			}
 		}
+
 	}
+
 }
