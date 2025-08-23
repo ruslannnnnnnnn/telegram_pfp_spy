@@ -11,8 +11,8 @@ import (
 )
 
 const (
-	EnvFilePath    = "/app/.env.dev"
-	ConfigFilePath = "/app/dev.config.json"
+	EnvFilePath    = "/app/.env"
+	ConfigFilePath = "/app/config.json"
 	// ENV var names
 	PollIntervalENV             = "POLL_INTERVAL"
 	MinDelayEnv                 = "MIN_DELAY"
