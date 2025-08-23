@@ -1,13 +1,17 @@
 {
   "chat_id": -123,
-  "users": [
-    {
+  "users": {
+    "123": {
+      "name": "name",
       "user_id": 123,
-      "message_text": "Аделина обновила аватарку"
+      "pfp_update_text": "123 обновил фотку",
+      "pizza_win_text": "123 победил в пицце"
     },
-    {
-      "user_id": 123,
-      "message_text": "Руслан обновил аватарку"
+    "321": {
+      "name": "name",
+      "user_id": 321,
+      "pfp_update_text": "321 аватарка новая алё",
+      "pizza_win_text": "321 играет в пиццу?"
     }
-  ]
+  }
 }

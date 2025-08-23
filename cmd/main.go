@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 	"spying_adelina/internal/app"
+	"spying_adelina/internal/telegram"
 	telegramservice "spying_adelina/internal/telegram/service"
 
 	"github.com/gin-gonic/gin"
@@ -39,10 +40,14 @@ func main() {
 
 	// для каждого пользователя из чата запускаем слежку за автаркой
 	for _, chatMember := range appConfig.SpyingConfig.ChatMembers {
-		go telegramservice.MonitorPfp(bot, appConfig, chatMember)
+		go telegramservice.MonitorPfp(bot, &appConfig, chatMember)
 	}
 
-	go telegramservice.PizzaGame(bot, appConfig)
+	pizzaGame := telegramservice.NewPizzaGame(bot, &appConfig)
+
+	go pizzaGame.Start()
+
+	go telegram.ListenToUpdates(bot, pizzaGame)
 
 	r := gin.Default()
 	r.GET("/ping", func(c *gin.Context) {

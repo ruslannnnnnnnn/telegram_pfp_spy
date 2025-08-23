@@ -11,31 +11,46 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-func PizzaGame(bot *tgbotapi.BotAPI, appConfig common.Config) {
-	u := tgbotapi.NewUpdate(0)
-	u.Timeout = 60
-	updates := bot.GetUpdatesChan(u)
+type PizzaGame struct {
+	bot       *tgbotapi.BotAPI
+	appConfig *common.Config
 
+	pizzaUpdatesChan chan tgbotapi.Update
+}
+
+func NewPizzaGame(bot *tgbotapi.BotAPI, appConfig *common.Config) *PizzaGame {
+	return &PizzaGame{
+		bot:              bot,
+		appConfig:        appConfig,
+		pizzaUpdatesChan: make(chan tgbotapi.Update),
+	}
+}
+
+func (p *PizzaGame) HandleTelegramUpdate(update tgbotapi.Update) {
+	p.pizzaUpdatesChan <- update
+}
+
+func (p *PizzaGame) Start() {
 	for {
-		randomDelayInSeconds := rand.Intn(appConfig.DelayBetweenPizzaGamesMax-appConfig.DelayBetweenPizzaGamesMin+1) + appConfig.DelayBetweenPizzaGamesMin
+		randomDelayInSeconds := rand.Intn(p.appConfig.DelayBetweenPizzaGamesMax-p.appConfig.DelayBetweenPizzaGamesMin+1) + p.appConfig.DelayBetweenPizzaGamesMin
 		sleepTime := time.Duration(randomDelayInSeconds) * time.Second
 		time.Sleep(sleepTime)
 
 		// Отправляем начальное сообщение и запоминаем время старта игры
-		msg := tgbotapi.NewMessage(int64(appConfig.SpyingConfig.ChatId), "Кто первый напишет \"пицца\" тот победил")
-		_, startPizzaGameErr := bot.Send(msg)
+		msg := tgbotapi.NewMessage(int64(p.appConfig.SpyingConfig.ChatId), "Кто первый напишет \"пицца\" тот победил")
+		_, startPizzaGameErr := p.bot.Send(msg)
 		if startPizzaGameErr != nil {
 			log.Println("Не удалось отправить сообщение о начале игры в пиццу " + startPizzaGameErr.Error())
 			continue
 		}
 
 		gameStartTime := time.Now() // Время старта игры
-		gameTimeout := time.After(time.Duration(appConfig.TimeoutForPizzaGame) * time.Minute)
+		gameTimeout := time.After(time.Duration(p.appConfig.TimeoutForPizzaGame) * time.Minute)
 		gameOver := false
 
 		for !gameOver {
 			select {
-			case update := <-updates:
+			case update := <-p.pizzaUpdatesChan:
 				if update.Message == nil {
 					continue
 				}
@@ -50,7 +65,7 @@ func PizzaGame(bot *tgbotapi.BotAPI, appConfig common.Config) {
 
 					winner := fmt.Sprintf("@%s победил(а)!", update.Message.From.UserName)
 					winnerMsg := tgbotapi.NewMessage(update.Message.Chat.ID, winner)
-					_, winnerMsgSendErr := bot.Send(winnerMsg)
+					_, winnerMsgSendErr := p.bot.Send(winnerMsg)
 					if winnerMsgSendErr != nil {
 						log.Println("Не удалось отправить сообщение о победе" + winnerMsgSendErr.Error())
 						panic(winnerMsgSendErr)
@@ -60,8 +75,8 @@ func PizzaGame(bot *tgbotapi.BotAPI, appConfig common.Config) {
 				}
 
 			case <-gameTimeout:
-				timeoutMsg := tgbotapi.NewMessage(int64(appConfig.SpyingConfig.ChatId), "Время вышло! Никто не успел написать \"пицца\"")
-				_, sendTimeoutMessageError := bot.Send(timeoutMsg)
+				timeoutMsg := tgbotapi.NewMessage(int64(p.appConfig.SpyingConfig.ChatId), "Время вышло! Никто не успел написать \"пицца\"")
+				_, sendTimeoutMessageError := p.bot.Send(timeoutMsg)
 				if sendTimeoutMessageError != nil {
 					log.Println("Не удалось отправить сообщение о таймауте в чат" + sendTimeoutMessageError.Error())
 					panic(sendTimeoutMessageError)

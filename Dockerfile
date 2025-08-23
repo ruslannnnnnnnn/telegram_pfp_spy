@@ -43,8 +43,8 @@ USER appuser
 
 COPY --from=build /bin/server /bin/
 
-COPY .env /app/
-COPY config.json /app/
+COPY .env.dev /app/
+COPY dev.config.json /app/
 
 EXPOSE 8080
 

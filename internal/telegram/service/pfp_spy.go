@@ -1,14 +1,15 @@
 package service
 
 import (
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"log"
 	"spying_adelina/internal/common"
 	"strconv"
 	"time"
+
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-func MonitorPfp(tgbot *tgbotapi.BotAPI, appConfig common.Config, chatMember common.TelegramChatMember) {
+func MonitorPfp(tgbot *tgbotapi.BotAPI, appConfig *common.Config, chatMember common.TelegramChatMember) {
 
 	var lastPhotoID string
 
@@ -27,7 +28,7 @@ func MonitorPfp(tgbot *tgbotapi.BotAPI, appConfig common.Config, chatMember comm
 			if currentPhotoID != lastPhotoID && lastPhotoID != "" {
 				log.Println("New profile photo detected, user_id: " + strconv.Itoa(chatMember.UserId))
 
-				msg := tgbotapi.NewMessage(int64(appConfig.SpyingConfig.ChatId), chatMember.MessageText)
+				msg := tgbotapi.NewMessage(int64(appConfig.SpyingConfig.ChatId), chatMember.PfpUpdateText)
 				delay := time.Duration(appConfig.MinDelay) * time.Second
 
 				if _, err := tgbot.Send(msg); err != nil {

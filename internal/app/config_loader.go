@@ -2,16 +2,17 @@ package app
 
 import (
 	"encoding/json"
-	"github.com/joho/godotenv"
 	"log"
 	"os"
 	"spying_adelina/internal/common"
 	"strconv"
+
+	"github.com/joho/godotenv"
 )
 
 const (
-	EnvFilePath    = "/app/.env"
-	ConfigFilePath = "/app/config.json"
+	EnvFilePath    = "/app/.env.dev"
+	ConfigFilePath = "/app/dev.config.json"
 	// ENV var names
 	PollIntervalENV             = "POLL_INTERVAL"
 	MinDelayEnv                 = "MIN_DELAY"

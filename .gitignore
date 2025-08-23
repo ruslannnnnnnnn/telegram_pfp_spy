@@ -1,3 +1,4 @@
 .idea
-.env
+.env*
 config.json
+dev.config.json
