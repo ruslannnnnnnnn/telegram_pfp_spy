@@ -1,6 +1,7 @@
 services:
   server:
     build:
+      dockerfile: ./docker/go/Dockerfile
       context: .
       target: final
     ports:
@@ -11,6 +12,8 @@ services:
     depends_on:
       clickhouse:
         condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
 
   clickhouse:
     image: clickhouse/clickhouse-server:latest
@@ -35,6 +38,16 @@ services:
       timeout: 3s
       retries: 10
       start_period: 5s
+
+  migrate:
+    build:
+      dockerfile: ./docker/migrator/Dockerfile
+      context: .
+    depends_on:
+      clickhouse:
+        condition: service_healthy
+    volumes:
+      - ./migrations:/app/migrations
 
 volumes:
   error_logs:

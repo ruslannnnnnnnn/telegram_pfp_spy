@@ -26,4 +26,9 @@ func (t *TelegramMessageAnalyser) HandleTelegramUpdate(update tgbotapi.Update) {
 	if err != nil {
 		log.Println("Не удалось сохранить сообщение в базу " + err.Error())
 	}
+
+	if update.Message.IsCommand() && update.Message.Command() == "stats" {
+
+	}
+
 }

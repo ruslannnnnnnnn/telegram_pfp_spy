@@ -5,7 +5,5 @@
 Создать файл с миграцией
 
 ```shell
-gоose -dir ./migrations create migration_name sql
+goose -dir ./migrations create migration_name sql
 ```
-
-Накат миграций происходит через скрипт migrate.sh
