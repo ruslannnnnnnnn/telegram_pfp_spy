@@ -36,4 +36,10 @@ type ITelegramUpdateHandler interface {
 type IAnalyticsStorage interface {
 	SaveTelegramUpdate(tgbotapi.Update) error
 	SavePizzaWin(tgbotapi.Update, time.Time) error
+	GetPizzaWinnersLeaderBoard() ([]PizzaPlayer, error)
+}
+
+type PizzaPlayer struct {
+	Username     string `json:"username"`
+	AmountOfWins int    `json:"amount_of_wins"`
 }

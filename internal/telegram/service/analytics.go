@@ -3,6 +3,7 @@ package service
 import (
 	"log"
 	"spying_adelina/internal/common"
+	"strconv"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
@@ -28,7 +29,20 @@ func (t *TelegramMessageAnalyser) HandleTelegramUpdate(update tgbotapi.Update) {
 	}
 
 	if update.Message.IsCommand() && update.Message.Command() == "stats" {
+		pizzaPlayers, leaderBoardErr := t.storage.GetPizzaWinnersLeaderBoard()
+		if leaderBoardErr != nil {
+			log.Fatal("Не удалось выполнить запрос на получение лидербордов по пицце" + leaderBoardErr.Error())
+		}
+		messageText := ""
 
+		for _, pizzaPlayer := range pizzaPlayers {
+			messageText += "@" + pizzaPlayer.Username + " - " + strconv.Itoa(pizzaPlayer.AmountOfWins) + "\n"
+		}
+		telegramMessage := tgbotapi.NewMessage(update.Message.Chat.ID, messageText)
+		_, statsMessageError := t.bot.Send(telegramMessage)
+		if statsMessageError != nil {
+			log.Println("Не удалось отправить сообщение с лидербордом пиццы" + statsMessageError.Error())
+		}
 	}
 
 }
