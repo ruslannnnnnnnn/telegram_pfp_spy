@@ -105,7 +105,12 @@ func (c *ClickHouse) SavePizzaWin(update tgbotapi.Update, gameStartTime time.Tim
 
 func (c *ClickHouse) GetPizzaWinnersLeaderBoard() ([]common.PizzaPlayer, error) {
 	ctx := context.Background()
-	rows, err := c.conn.Query(ctx, "SELECT username, wins FROM pizza_game_leaderboard FINAL")
+	rows, err := c.conn.Query(ctx, `
+		SELECT username, wins
+		FROM pizza_game_leaderboard
+		    FINAL
+		ORDER BY wins DESC
+	`)
 	if err != nil {
 		return nil, err
 	}
