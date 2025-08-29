@@ -134,3 +134,9 @@ func (c *ClickHouse) GetPizzaWinnersLeaderBoard() ([]common.PizzaPlayer, error) 
 
 	return result, nil
 }
+
+func (c *ClickHouse) Ping() (time.Duration, error) {
+	start := time.Now()
+	err := c.conn.Ping(context.Background())
+	return time.Since(start), err
+}

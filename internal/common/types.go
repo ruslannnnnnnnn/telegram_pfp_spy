@@ -37,6 +37,7 @@ type IAnalyticsStorage interface {
 	SaveTelegramUpdate(tgbotapi.Update) error
 	SavePizzaWin(tgbotapi.Update, time.Time) error
 	GetPizzaWinnersLeaderBoard() ([]PizzaPlayer, error)
+	Ping() (time.Duration, error)
 }
 
 type PizzaPlayer struct {

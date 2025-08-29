@@ -8,7 +8,7 @@ COPY migrations /app/migrations
 
 COPY .env /app/.env
 
-COPY migrate.sh /app/migrate.sh
+COPY docker/migrator/migrate.sh /app/migrate.sh
 RUN chmod +x /app/migrate.sh
 
 CMD ["/app/migrate.sh"]

@@ -11,13 +11,12 @@ import (
 
 const (
 	TelegramBotApiToken = "TELEGRAM_BOT_API_TOKEN"
-	ErrorsLogFilePath   = "/app/log/errors.log"
 )
 
 func main() {
 
 	// Открываем файл для логирования (если не существует - создаётся)
-	file, err := os.OpenFile(ErrorsLogFilePath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	file, err := os.OpenFile(app.ErrorsLogFilePath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
 		log.Fatal("Ошибка открытия файла логов: ", err.Error())
 	}
@@ -43,6 +42,7 @@ func main() {
 
 	// сборщик статистики
 	telegramMessageAnalyser := telegramservice.NewTelegramMessageAnalyser(bot, &appConfig, clickhouseInstance)
+	healthCheckService := telegramservice.NewHealthCheckService(bot, &appConfig, clickhouseInstance)
 
 	// для каждого пользователя из чата запускаем слежку за аватаркой
 	for _, chatMember := range appConfig.SpyingConfig.ChatMembers {
@@ -53,5 +53,5 @@ func main() {
 
 	go pizzaGame.Start()
 
-	telegram.ListenToUpdates(bot, pizzaGame, telegramMessageAnalyser)
+	telegram.ListenToUpdates(bot, pizzaGame, telegramMessageAnalyser, healthCheckService)
 }

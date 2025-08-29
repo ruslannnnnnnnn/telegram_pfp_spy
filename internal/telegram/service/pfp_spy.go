@@ -26,8 +26,6 @@ func MonitorPfp(tgbot *tgbotapi.BotAPI, appConfig *common.Config, chatMember com
 		if len(photos.Photos) > 0 && len(photos.Photos[0]) > 0 {
 			currentPhotoID := photos.Photos[0][0].FileID
 			if currentPhotoID != lastPhotoID && lastPhotoID != "" {
-				log.Println("New profile photo detected, user_id: " + chatMember.Name)
-
 				msg := tgbotapi.NewMessage(appConfig.SpyingConfig.ChatId, chatMember.PfpUpdateText)
 				delay := time.Duration(appConfig.MinDelay) * time.Second
 
