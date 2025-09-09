@@ -18,7 +18,7 @@ func MonitorPfp(tgbot *tgbotapi.BotAPI, appConfig *common.Config, chatMember com
 
 		pollInterval := time.Duration(appConfig.PollInterval) * time.Second
 		if err != nil {
-			log.Printf("Failed to get profile photos of "+chatMember.Name+": %v", err)
+			log.Println("Не удалось получить фотки человека по имени " + chatMember.Name + ": " + err.Error())
 			time.Sleep(pollInterval)
 			continue
 		}
@@ -30,7 +30,7 @@ func MonitorPfp(tgbot *tgbotapi.BotAPI, appConfig *common.Config, chatMember com
 				delay := time.Duration(appConfig.MinDelay) * time.Second
 
 				if _, err := tgbot.Send(msg); err != nil {
-					log.Printf("Failed to send message: %v", err)
+					log.Println("Не удалось отправить сообщение об обновлении фотографии : " + err.Error())
 					time.Sleep(delay)
 					continue
 				}
