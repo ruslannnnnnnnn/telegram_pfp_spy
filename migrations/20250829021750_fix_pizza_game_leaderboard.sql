@@ -61,18 +61,6 @@ SELECT
 FROM telegram_message_raw;
 -- +goose StatementEnd
 
--- +goose StatementBegin
-
--- +goose StatementEnd
-
--- +goose StatementBegin
-
--- +goose StatementEnd
-
--- +goose StatementBegin
-
--- +goose StatementEnd
-
 -- +goose Down
 -- +goose StatementBegin
 SELECT 'чет лень писать обратную миграцию';
