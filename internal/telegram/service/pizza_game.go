@@ -58,7 +58,7 @@ func (p *PizzaGame) Start() {
 				}
 
 				// Игнорируем сообщения, отправленные ДО старта игры
-				if update.Message.Time().Before(gameStartTime) {
+				if int64(update.Message.Date) < gameStartTime.Unix() {
 					continue
 				}
 
